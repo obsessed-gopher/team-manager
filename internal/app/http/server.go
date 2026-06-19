@@ -84,6 +84,10 @@ func (s *Server) router() http.Handler {
 	r.Get("/health", s.handleHealth)
 	r.Handle("/metrics", promhttp.Handler())
 
+	// Документация API: Swagger UI и OpenAPI-спецификация.
+	r.Get("/swagger", s.handleSwaggerUI)
+	r.Get("/openapi.yaml", s.handleOpenAPISpec)
+
 	r.Route("/api/v1", func(r chi.Router) {
 		// Публичные эндпоинты с rate limit по IP.
 		r.Group(func(r chi.Router) {

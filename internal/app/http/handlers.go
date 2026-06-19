@@ -15,6 +15,9 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+// TODO: В своем проекте я бы использовал gRPC API proto с gateway,
+// но в задаче просили именно REST HTTP.
+
 // Ключи JSON-полей, переиспользуемые в нескольких ответах.
 const (
 	teamsKey    = "teams"

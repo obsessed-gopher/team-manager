@@ -32,6 +32,18 @@ make run               # TM_CONFIG_PATH=config/local.yml go run ./cmd/teammanage
 
 База: `/api/v1`. Защищённые ручки требуют заголовок `Authorization: Bearer <token>`.
 
+### Swagger / OpenAPI
+
+Интерактивная документация захоштена прямо в сервисе:
+
+- **Swagger UI** — `http://localhost:8080/swagger`
+- **OpenAPI 3.0 спецификация** — `http://localhost:8080/openapi.yaml`
+
+Спецификация лежит в `internal/app/http/docs/openapi.yaml` и встраивается в бинарник
+через `go:embed`. В Swagger UI нажмите **Authorize** и вставьте JWT из `POST /login`,
+чтобы дёргать защищённые ручки.
+
+
 | Метод | Путь | Что делает |
 |-------|------|------------|
 | POST | `/register` | регистрация |
@@ -51,6 +63,7 @@ make run               # TM_CONFIG_PATH=config/local.yml go run ./cmd/teammanage
 | GET  | `/analytics/top-creators` | топ-3 создателя задач в каждой команде за месяц |
 | GET  | `/analytics/integrity-issues` | задачи, где исполнитель не в команде |
 | GET  | `/health` · `/metrics` | health-check · Prometheus |
+| GET  | `/swagger` · `/openapi.yaml` | Swagger UI · OpenAPI-спецификация |
 
 Пример:
 

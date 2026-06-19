@@ -9,17 +9,17 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/zyablitskiy/team-manager/internal/adapters/cache"
-	"github.com/zyablitskiy/team-manager/internal/adapters/email"
-	"github.com/zyablitskiy/team-manager/internal/adapters/mysql"
-	"github.com/zyablitskiy/team-manager/internal/adapters/mysql/conn"
-	httpapp "github.com/zyablitskiy/team-manager/internal/app/http"
-	"github.com/zyablitskiy/team-manager/internal/config"
-	"github.com/zyablitskiy/team-manager/internal/modules/auth"
-	"github.com/zyablitskiy/team-manager/internal/modules/tasks"
-	"github.com/zyablitskiy/team-manager/internal/modules/teams"
-	"github.com/zyablitskiy/team-manager/internal/pkg/jwt"
-	"github.com/zyablitskiy/team-manager/internal/pkg/logger"
+	"github.com/obsessed-gopher/team-manager/internal/adapters/cache"
+	"github.com/obsessed-gopher/team-manager/internal/adapters/email"
+	"github.com/obsessed-gopher/team-manager/internal/adapters/mysql"
+	"github.com/obsessed-gopher/team-manager/internal/adapters/mysql/conn"
+	httpapp "github.com/obsessed-gopher/team-manager/internal/app/http"
+	"github.com/obsessed-gopher/team-manager/internal/config"
+	"github.com/obsessed-gopher/team-manager/internal/modules/auth"
+	"github.com/obsessed-gopher/team-manager/internal/modules/tasks"
+	"github.com/obsessed-gopher/team-manager/internal/modules/teams"
+	"github.com/obsessed-gopher/team-manager/internal/platform/jwt"
+	"github.com/obsessed-gopher/team-manager/internal/platform/logger"
 )
 
 func main() {

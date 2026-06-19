@@ -9,10 +9,10 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/zyablitskiy/team-manager/internal/adapters/cache"
-	"github.com/zyablitskiy/team-manager/internal/adapters/mysql"
-	"github.com/zyablitskiy/team-manager/internal/models"
-	"github.com/zyablitskiy/team-manager/internal/pkg/httpx"
+	"github.com/obsessed-gopher/team-manager/internal/adapters/cache"
+	"github.com/obsessed-gopher/team-manager/internal/adapters/mysql"
+	"github.com/obsessed-gopher/team-manager/internal/models"
+	"github.com/obsessed-gopher/team-manager/internal/platform/httpx"
 )
 
 // Repository — доступ к данным задач (определён у потребителя).
@@ -263,12 +263,14 @@ func normalizePagination(f *models.TaskFilter) {
 }
 
 func cacheKey(f models.TaskFilter) string {
-	assignee := "any"
+	const anyValue = "any"
+
+	assignee := anyValue
 	if f.AssigneeID != nil {
 		assignee = fmt.Sprintf("%d", *f.AssigneeID)
 	}
 
-	status := "any"
+	status := anyValue
 	if f.Status != "" {
 		status = string(f.Status)
 	}

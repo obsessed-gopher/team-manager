@@ -5,15 +5,18 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/zyablitskiy/team-manager/internal/adapters/mysql"
-	"github.com/zyablitskiy/team-manager/internal/app/http/middleware"
-	"github.com/zyablitskiy/team-manager/internal/models"
-	"github.com/zyablitskiy/team-manager/internal/modules/tasks"
-	"github.com/zyablitskiy/team-manager/internal/modules/teams"
-	"github.com/zyablitskiy/team-manager/internal/pkg/httpx"
+	"github.com/obsessed-gopher/team-manager/internal/adapters/mysql"
+	"github.com/obsessed-gopher/team-manager/internal/app/http/middleware"
+	"github.com/obsessed-gopher/team-manager/internal/models"
+	"github.com/obsessed-gopher/team-manager/internal/modules/tasks"
+	"github.com/obsessed-gopher/team-manager/internal/modules/teams"
+	"github.com/obsessed-gopher/team-manager/internal/platform/httpx"
 
 	"github.com/go-chi/chi/v5"
 )
+
+// teamsKey — ключ JSON-поля со списком команд в ответах.
+const teamsKey = "teams"
 
 // AuthService — контракт сервиса аутентификации для HTTP-слоя.
 type AuthService interface {
@@ -124,7 +127,7 @@ func (s *Server) handleListTeams(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httpx.JSON(w, http.StatusOK, map[string]any{"teams": teamsList})
+	httpx.JSON(w, http.StatusOK, map[string]any{teamsKey: teamsList})
 }
 
 func (s *Server) handleInvite(w http.ResponseWriter, r *http.Request) {
@@ -291,7 +294,7 @@ func (s *Server) handleTeamStats(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httpx.JSON(w, http.StatusOK, map[string]any{"teams": stats})
+	httpx.JSON(w, http.StatusOK, map[string]any{teamsKey: stats})
 }
 
 func (s *Server) handleTopCreators(w http.ResponseWriter, r *http.Request) {

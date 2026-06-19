@@ -9,7 +9,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/zyablitskiy/team-manager/internal/config"
+	"github.com/obsessed-gopher/team-manager/internal/config"
 
 	"github.com/sony/gobreaker"
 )
@@ -46,8 +46,9 @@ func NewService(cfg *config.Email, logger *slog.Logger) *Service {
 		cb:       cb,
 		failRate: cfg.FailRate,
 		latency:  cfg.Latency,
-		rnd:      rand.New(rand.NewSource(time.Now().UnixNano())),
-		logger:   logger,
+		// Слабый rand допустим: это мок для эмуляции сбоев, не криптография.
+		rnd:    rand.New(rand.NewSource(time.Now().UnixNano())), //nolint:gosec
+		logger: logger,
 	}
 }
 

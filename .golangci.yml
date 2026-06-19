@@ -1,0 +1,37 @@
+# More info: https://golangci-lint.run/usage/configuration/#config-file
+version: "2"
+
+run:
+  concurrency: 8
+  issues-exit-code: 1
+  tests: true
+
+linters:
+  default: none
+  enable:
+    - errcheck
+    - goconst
+    - gosec
+    - govet
+    - ineffassign
+    - staticcheck
+    - revive
+    - unused
+  settings:
+    govet:
+      disable:
+        - fieldalignment
+    goconst:
+      min-len: 2
+      min-occurrences: 2
+  exclusions:
+    paths:
+      - bin
+      - tmp
+    rules:
+      # В тестах допускаем "слабый" rand, чтение файлов по пути,
+      # а также повторяющиеся строковые фикстуры.
+      - path: _test.go
+        linters:
+          - gosec
+          - goconst

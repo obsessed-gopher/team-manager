@@ -6,9 +6,9 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/zyablitskiy/team-manager/internal/adapters/mysql"
-	"github.com/zyablitskiy/team-manager/internal/models"
-	"github.com/zyablitskiy/team-manager/internal/pkg/httpx"
+	"github.com/obsessed-gopher/team-manager/internal/adapters/mysql"
+	"github.com/obsessed-gopher/team-manager/internal/models"
+	"github.com/obsessed-gopher/team-manager/internal/platform/httpx"
 )
 
 // Repository — доступ к данным команд (определён у потребителя).

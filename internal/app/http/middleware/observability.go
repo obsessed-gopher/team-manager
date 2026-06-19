@@ -6,8 +6,8 @@ import (
 	"runtime/debug"
 	"time"
 
-	"github.com/zyablitskiy/team-manager/internal/pkg/httpx"
-	"github.com/zyablitskiy/team-manager/internal/pkg/metrics"
+	"github.com/obsessed-gopher/team-manager/internal/platform/httpx"
+	"github.com/obsessed-gopher/team-manager/internal/platform/metrics"
 
 	"github.com/go-chi/chi/v5"
 )

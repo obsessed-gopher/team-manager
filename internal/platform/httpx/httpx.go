@@ -13,6 +13,9 @@ type Error struct {
 	Message string
 }
 
+// errorKey — ключ JSON-поля с текстом ошибки.
+const errorKey = "error"
+
 func (e *Error) Error() string { return e.Message }
 
 // NewError создаёт доменную HTTP-ошибку.
@@ -20,12 +23,20 @@ func NewError(status int, message string) *Error {
 	return &Error{Status: status, Message: message}
 }
 
-// Часто используемые ошибки-конструкторы.
-func BadRequest(msg string) *Error   { return NewError(http.StatusBadRequest, msg) }
+// BadRequest — ошибка 400.
+func BadRequest(msg string) *Error { return NewError(http.StatusBadRequest, msg) }
+
+// Unauthorized — ошибка 401.
 func Unauthorized(msg string) *Error { return NewError(http.StatusUnauthorized, msg) }
-func Forbidden(msg string) *Error    { return NewError(http.StatusForbidden, msg) }
-func NotFound(msg string) *Error     { return NewError(http.StatusNotFound, msg) }
-func Conflict(msg string) *Error     { return NewError(http.StatusConflict, msg) }
+
+// Forbidden — ошибка 403.
+func Forbidden(msg string) *Error { return NewError(http.StatusForbidden, msg) }
+
+// NotFound — ошибка 404.
+func NotFound(msg string) *Error { return NewError(http.StatusNotFound, msg) }
+
+// Conflict — ошибка 409.
+func Conflict(msg string) *Error { return NewError(http.StatusConflict, msg) }
 
 // JSON пишет данные в ответ в формате JSON.
 func JSON(w http.ResponseWriter, status int, payload any) {
@@ -44,11 +55,11 @@ func JSON(w http.ResponseWriter, status int, payload any) {
 func Fail(w http.ResponseWriter, err error) {
 	var de *Error
 	if errors.As(err, &de) {
-		JSON(w, de.Status, map[string]string{"error": de.Message})
+		JSON(w, de.Status, map[string]string{errorKey: de.Message})
 		return
 	}
 
-	JSON(w, http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+	JSON(w, http.StatusInternalServerError, map[string]string{errorKey: "internal server error"})
 }
 
 // Decode читает и валидирует JSON-тело запроса.

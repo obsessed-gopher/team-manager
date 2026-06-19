@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/zyablitskiy/team-manager/internal/pkg/httpx"
-	"github.com/zyablitskiy/team-manager/internal/pkg/jwt"
+	"github.com/obsessed-gopher/team-manager/internal/platform/httpx"
+	"github.com/obsessed-gopher/team-manager/internal/platform/jwt"
 )
 
 type ctxKey string

@@ -6,10 +6,10 @@ import (
 	"log/slog"
 	"testing"
 
-	"github.com/zyablitskiy/team-manager/internal/adapters/cache"
-	"github.com/zyablitskiy/team-manager/internal/adapters/mysql"
-	"github.com/zyablitskiy/team-manager/internal/models"
-	"github.com/zyablitskiy/team-manager/internal/pkg/httpx"
+	"github.com/obsessed-gopher/team-manager/internal/adapters/cache"
+	"github.com/obsessed-gopher/team-manager/internal/adapters/mysql"
+	"github.com/obsessed-gopher/team-manager/internal/models"
+	"github.com/obsessed-gopher/team-manager/internal/platform/httpx"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

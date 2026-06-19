@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/zyablitskiy/team-manager/internal/models"
+	"github.com/obsessed-gopher/team-manager/internal/models"
 )
 
 // TeamStats реализует сложный запрос (а): JOIN 3+ таблиц + агрегация.
@@ -30,7 +30,7 @@ func (s *Store) TeamStats(ctx context.Context) ([]*models.TeamStats, error) {
 	if err != nil {
 		return nil, fmt.Errorf("team stats: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var out []*models.TeamStats
 	for rows.Next() {

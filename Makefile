@@ -27,16 +27,17 @@ test-integration:
 
 ## cover: покрытие тестами критичных модулей
 cover:
-	go test ./internal/modules/... ./internal/pkg/... -coverprofile=coverage.out -count=1
+	go test ./internal/modules/... ./internal/platform/... -coverprofile=coverage.out -count=1
 	go tool cover -func=coverage.out | tail -n 20
 
 ## tidy: привести в порядок go.mod/go.sum
 tidy:
 	go mod tidy
 
-## lint: статический анализ
+## lint: статический анализ (golangci-lint + go vet)
 lint:
 	go vet ./...
+	golangci-lint run ./...
 
 ## up: поднять всё окружение (mysql, redis, migrate, app)
 up:

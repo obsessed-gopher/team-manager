@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/zyablitskiy/team-manager/internal/models"
+	"github.com/obsessed-gopher/team-manager/internal/models"
 )
 
 // CreateTask создаёт задачу и стартовую запись истории в одной транзакции.
@@ -86,12 +86,15 @@ func (s *Store) ListTasks(ctx context.Context, f models.TaskFilter) ([]*models.T
 		args = append(args, *f.AssigneeID)
 	}
 
-	query := fmt.Sprintf(`
+	// Безопасно: %s заполняется только статичными предикатами выше,
+	// все пользовательские значения идут плейсхолдерами через args.
+	const tmpl = `
 		SELECT id, team_id, title, description, status, assignee_id, created_by, created_at, updated_at
 		FROM tasks
 		WHERE %s
 		ORDER BY id DESC
-		LIMIT ? OFFSET ?`, strings.Join(conds, " AND "))
+		LIMIT ? OFFSET ?`
+	query := fmt.Sprintf(tmpl, strings.Join(conds, " AND ")) //nolint:gosec // см. комментарий выше
 	args = append(args, f.Limit, f.Offset)
 
 	rows, err := s.db.QueryContext(ctx, query, args...)

@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/zyablitskiy/team-manager/internal/pkg/httpx"
+	"github.com/obsessed-gopher/team-manager/internal/platform/httpx"
 
 	"golang.org/x/time/rate"
 )

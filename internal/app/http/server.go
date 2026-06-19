@@ -9,11 +9,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/zyablitskiy/team-manager/internal/app/http/middleware"
-	"github.com/zyablitskiy/team-manager/internal/config"
-	"github.com/zyablitskiy/team-manager/internal/pkg/httpx"
-	"github.com/zyablitskiy/team-manager/internal/pkg/jwt"
-	"github.com/zyablitskiy/team-manager/internal/pkg/metrics"
+	"github.com/obsessed-gopher/team-manager/internal/app/http/middleware"
+	"github.com/obsessed-gopher/team-manager/internal/config"
+	"github.com/obsessed-gopher/team-manager/internal/platform/httpx"
+	"github.com/obsessed-gopher/team-manager/internal/platform/jwt"
+	"github.com/obsessed-gopher/team-manager/internal/platform/metrics"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -116,12 +116,14 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
 	defer cancel()
 
+	const statusKey = "status"
+
 	if err := s.db.PingContext(ctx); err != nil {
-		httpx.JSON(w, http.StatusServiceUnavailable, map[string]string{"status": "db unavailable"})
+		httpx.JSON(w, http.StatusServiceUnavailable, map[string]string{statusKey: "db unavailable"})
 		return
 	}
 
-	httpx.JSON(w, http.StatusOK, map[string]string{"status": "ok"})
+	httpx.JSON(w, http.StatusOK, map[string]string{statusKey: "ok"})
 }
 
 // Run запускает HTTP-сервер (блокирующе до ошибки или остановки).

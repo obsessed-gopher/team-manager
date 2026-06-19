@@ -6,7 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/zyablitskiy/team-manager/internal/config"
+	"github.com/obsessed-gopher/team-manager/internal/config"
 
 	_ "github.com/go-sql-driver/mysql" // драйвер MySQL
 )

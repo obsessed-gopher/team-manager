@@ -6,6 +6,7 @@ import "time"
 // Role — роль пользователя в команде.
 type Role string
 
+// Роли пользователя в команде.
 const (
 	RoleOwner  Role = "owner"
 	RoleAdmin  Role = "admin"
@@ -30,6 +31,7 @@ func (r Role) CanInvite() bool {
 // TaskStatus — статус задачи.
 type TaskStatus string
 
+// Статусы задачи.
 const (
 	StatusTodo       TaskStatus = "todo"
 	StatusInProgress TaskStatus = "in_progress"

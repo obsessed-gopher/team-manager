@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/zyablitskiy/team-manager/internal/config"
+	"github.com/obsessed-gopher/team-manager/internal/config"
 
 	"github.com/redis/go-redis/v9"
 )

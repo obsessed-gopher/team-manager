@@ -1,4 +1,4 @@
-module github.com/zyablitskiy/team-manager
+module github.com/obsessed-gopher/team-manager
 
 go 1.26.3
 

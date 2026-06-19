@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/zyablitskiy/team-manager/internal/models"
+	"github.com/obsessed-gopher/team-manager/internal/models"
 )
 
 // CreateTeamWithOwner создаёт команду и добавляет создателя как owner в одной транзакции.

@@ -22,22 +22,28 @@ func New(reg prometheus.Registerer) *Metrics {
 		reg = prometheus.DefaultRegisterer
 	}
 
+	const (
+		labelMethod = "method"
+		labelPath   = "path"
+		labelStatus = "status"
+	)
+
 	factory := promauto.With(reg)
 
 	return &Metrics{
 		requestsTotal: factory.NewCounterVec(prometheus.CounterOpts{
 			Name: "http_requests_total",
 			Help: "Общее число HTTP-запросов.",
-		}, []string{"method", "path", "status"}),
+		}, []string{labelMethod, labelPath, labelStatus}),
 		errorsTotal: factory.NewCounterVec(prometheus.CounterOpts{
 			Name: "http_errors_total",
 			Help: "Число HTTP-запросов, завершившихся ошибкой (status >= 400).",
-		}, []string{"method", "path", "status"}),
+		}, []string{labelMethod, labelPath, labelStatus}),
 		duration: factory.NewHistogramVec(prometheus.HistogramOpts{
 			Name:    "http_request_duration_seconds",
 			Help:    "Время ответа HTTP-запросов в секундах.",
 			Buckets: prometheus.DefBuckets,
-		}, []string{"method", "path"}),
+		}, []string{labelMethod, labelPath}),
 	}
 }
 

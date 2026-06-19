@@ -4,8 +4,20 @@ package httpx
 import (
 	"encoding/json"
 	"errors"
+	"log/slog"
 	"net/http"
 )
+
+// logger используется для записи внутренних (непредвиденных) ошибок.
+// По умолчанию — стандартный slog; продакшен-логгер выставляется через SetLogger.
+var logger = slog.Default()
+
+// SetLogger задаёт логгер для записи внутренних ошибок из Fail.
+func SetLogger(l *slog.Logger) {
+	if l != nil {
+		logger = l
+	}
+}
 
 // Error — доменная ошибка с HTTP-статусом, понятная транспортному слою.
 type Error struct {
@@ -59,6 +71,8 @@ func Fail(w http.ResponseWriter, err error) {
 		return
 	}
 
+	// Непредвиденная ошибка: клиенту отдаём обобщённый текст, причину пишем в лог.
+	logger.Error("internal server error", "error", err)
 	JSON(w, http.StatusInternalServerError, map[string]string{errorKey: "internal server error"})
 }
 

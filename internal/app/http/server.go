@@ -50,6 +50,9 @@ type Server struct {
 
 // NewServer собирает сервер с маршрутами и middleware.
 func NewServer(d Deps) *Server {
+	// httpx.Fail пишет причину непредвиденных ошибок в этот логгер.
+	httpx.SetLogger(d.Logger)
+
 	s := &Server{
 		cfg:       d.Config,
 		logger:    d.Logger,
@@ -78,6 +81,7 @@ func (s *Server) router() http.Handler {
 	r := chi.NewRouter()
 
 	r.Use(middleware.Recover(s.logger))
+	r.Use(middleware.RequestLogger(s.logger))
 	r.Use(middleware.Metrics(s.metrics))
 
 	// Служебные эндпоинты.

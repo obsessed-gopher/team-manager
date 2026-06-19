@@ -38,6 +38,43 @@ func Metrics(m *metrics.Metrics) func(http.Handler) http.Handler {
 	}
 }
 
+// RequestLogger логирует каждый HTTP-запрос: метод, маршрут, статус и длительность.
+// Уровень зависит от статуса: 5xx — Error, 4xx — Warn, остальное — Info.
+// Служебные эндпоинты (/health, /metrics) логируются на Debug, чтобы не шуметь.
+func RequestLogger(logger *slog.Logger) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			start := time.Now()
+			rec := &statusRecorder{ResponseWriter: w, status: http.StatusOK}
+
+			next.ServeHTTP(rec, r)
+
+			level := levelForStatus(rec.status, r.URL.Path)
+			logger.LogAttrs(r.Context(), level, "http request",
+				slog.String("method", r.Method),
+				slog.String("path", routePattern(r)),
+				slog.Int("status", rec.status),
+				slog.Int64("duration_ms", time.Since(start).Milliseconds()),
+				slog.String("remote_addr", r.RemoteAddr),
+			)
+		})
+	}
+}
+
+// levelForStatus выбирает уровень логирования по статусу ответа и пути.
+func levelForStatus(status int, path string) slog.Level {
+	switch {
+	case status >= http.StatusInternalServerError:
+		return slog.LevelError
+	case status >= http.StatusBadRequest:
+		return slog.LevelWarn
+	case path == "/health" || path == "/metrics":
+		return slog.LevelDebug
+	default:
+		return slog.LevelInfo
+	}
+}
+
 // routePattern возвращает шаблон маршрута (без подстановки id) для стабильных меток.
 func routePattern(r *http.Request) string {
 	if rc := chi.RouteContext(r.Context()); rc != nil {

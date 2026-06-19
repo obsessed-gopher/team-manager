@@ -132,6 +132,35 @@ func TestIntegration_FullFlow(t *testing.T) {
 	require.NoError(t, err)
 	assert.Empty(t, list)
 
+	// --- Комментарии (CRUD) ---
+	cID, err := store.CreateComment(ctx, &models.TaskComment{TaskID: task.ID, UserID: memberID, Body: "first"})
+	require.NoError(t, err)
+	require.NotZero(t, cID)
+
+	got, err := store.GetCommentByID(ctx, cID)
+	require.NoError(t, err)
+	assert.Equal(t, "first", got.Body)
+
+	_, err = store.CreateComment(ctx, &models.TaskComment{TaskID: task.ID, UserID: ownerID, Body: "second"})
+	require.NoError(t, err)
+
+	comments, err := store.ListComments(ctx, task.ID, 10, 0)
+	require.NoError(t, err)
+	require.Len(t, comments, 2)
+	assert.Equal(t, "first", comments[0].Body, "по возрастанию времени")
+
+	updated2, err := store.UpdateComment(ctx, cID, "edited")
+	require.NoError(t, err)
+	assert.Equal(t, "edited", updated2.Body)
+
+	require.NoError(t, store.DeleteComment(ctx, cID))
+	_, err = store.GetCommentByID(ctx, cID)
+	assert.ErrorIs(t, err, mysql.ErrNotFound)
+
+	comments, err = store.ListComments(ctx, task.ID, 10, 0)
+	require.NoError(t, err)
+	require.Len(t, comments, 1)
+
 	// --- Сложный запрос (а): JOIN 3+ таблиц + агрегация ---
 	stats, err := store.TeamStats(ctx)
 	require.NoError(t, err)

@@ -16,6 +16,7 @@ import (
 	httpapp "github.com/obsessed-gopher/team-manager/internal/app/http"
 	"github.com/obsessed-gopher/team-manager/internal/config"
 	"github.com/obsessed-gopher/team-manager/internal/modules/auth"
+	"github.com/obsessed-gopher/team-manager/internal/modules/comments"
 	"github.com/obsessed-gopher/team-manager/internal/modules/tasks"
 	"github.com/obsessed-gopher/team-manager/internal/modules/teams"
 	"github.com/obsessed-gopher/team-manager/internal/platform/jwt"
@@ -64,6 +65,7 @@ func main() {
 	authSvc := auth.NewService(store, jwtManager)
 	teamsSvc := teams.NewService(store, store, emailSvc)
 	tasksSvc := tasks.NewService(store, redisStore, log)
+	commentsSvc := comments.NewService(store)
 
 	srv := httpapp.NewServer(httpapp.Deps{
 		Config:    cfg,
@@ -73,6 +75,7 @@ func main() {
 		Auth:      authSvc,
 		Teams:     teamsSvc,
 		Tasks:     tasksSvc,
+		Comments:  commentsSvc,
 		Analytics: store,
 	})
 

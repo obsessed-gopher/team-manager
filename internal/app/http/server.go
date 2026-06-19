@@ -28,6 +28,7 @@ type Deps struct {
 	Auth      AuthService
 	Teams     TeamService
 	Tasks     TaskService
+	Comments  CommentService
 	Analytics AnalyticsService
 }
 
@@ -40,6 +41,7 @@ type Server struct {
 	auth      AuthService
 	teams     TeamService
 	tasks     TaskService
+	comments  CommentService
 	analytics AnalyticsService
 	metrics   *metrics.Metrics
 	rl        *middleware.RateLimiter
@@ -56,6 +58,7 @@ func NewServer(d Deps) *Server {
 		auth:      d.Auth,
 		teams:     d.Teams,
 		tasks:     d.Tasks,
+		comments:  d.Comments,
 		analytics: d.Analytics,
 		metrics:   metrics.New(nil),
 		rl:        middleware.NewRateLimiter(d.Config.RateLimit.RequestsPerMinute, d.Config.RateLimit.Burst),
@@ -102,6 +105,11 @@ func (s *Server) router() http.Handler {
 			r.Get("/tasks", s.handleListTasks)
 			r.Put("/tasks/{id}", s.handleUpdateTask)
 			r.Get("/tasks/{id}/history", s.handleTaskHistory)
+
+			r.Post("/tasks/{id}/comments", s.handleCreateComment)
+			r.Get("/tasks/{id}/comments", s.handleListComments)
+			r.Put("/comments/{id}", s.handleUpdateComment)
+			r.Delete("/comments/{id}", s.handleDeleteComment)
 
 			r.Get("/analytics/team-stats", s.handleTeamStats)
 			r.Get("/analytics/top-creators", s.handleTopCreators)

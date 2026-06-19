@@ -15,8 +15,14 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-// teamsKey — ключ JSON-поля со списком команд в ответах.
-const teamsKey = "teams"
+// Ключи JSON-полей, переиспользуемые в нескольких ответах.
+const (
+	teamsKey    = "teams"
+	limitKey    = "limit"
+	offsetKey   = "offset"
+	tasksKey    = "tasks"
+	commentsKey = "comments"
+)
 
 // AuthService — контракт сервиса аутентификации для HTTP-слоя.
 type AuthService interface {
@@ -37,6 +43,14 @@ type TaskService interface {
 	List(ctx context.Context, actorID int64, f models.TaskFilter) ([]*models.Task, error)
 	Update(ctx context.Context, actorID, taskID int64, upd mysql.TaskUpdate) (*models.Task, error)
 	History(ctx context.Context, actorID, taskID int64) ([]*models.TaskHistory, error)
+}
+
+// CommentService — контракт сервиса комментариев.
+type CommentService interface {
+	Create(ctx context.Context, actorID, taskID int64, body string) (*models.TaskComment, error)
+	List(ctx context.Context, actorID, taskID int64, limit, offset int) ([]*models.TaskComment, error)
+	Update(ctx context.Context, actorID, commentID int64, body string) (*models.TaskComment, error)
+	Delete(ctx context.Context, actorID, commentID int64) error
 }
 
 // AnalyticsService — контракт аналитических запросов.
@@ -227,9 +241,9 @@ func (s *Server) handleListTasks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	httpx.JSON(w, http.StatusOK, map[string]any{
-		"tasks":  list,
-		"limit":  filter.Limit,
-		"offset": filter.Offset,
+		tasksKey:  list,
+		limitKey:  filter.Limit,
+		offsetKey: filter.Offset,
 	})
 }
 
@@ -283,6 +297,98 @@ func (s *Server) handleTaskHistory(w http.ResponseWriter, r *http.Request) {
 	}
 
 	httpx.JSON(w, http.StatusOK, map[string]any{"history": history})
+}
+
+// --- Comments ---
+
+type commentRequest struct {
+	Body string `json:"body"`
+}
+
+func (s *Server) handleCreateComment(w http.ResponseWriter, r *http.Request) {
+	userID, _ := middleware.UserID(r.Context())
+	taskID, err := pathID(r, "id")
+	if err != nil {
+		httpx.Fail(w, err)
+		return
+	}
+
+	var req commentRequest
+	if err = httpx.Decode(r, &req); err != nil {
+		httpx.Fail(w, err)
+		return
+	}
+
+	comment, err := s.comments.Create(r.Context(), userID, taskID, req.Body)
+	if err != nil {
+		httpx.Fail(w, err)
+		return
+	}
+
+	httpx.JSON(w, http.StatusCreated, comment)
+}
+
+func (s *Server) handleListComments(w http.ResponseWriter, r *http.Request) {
+	userID, _ := middleware.UserID(r.Context())
+	taskID, err := pathID(r, "id")
+	if err != nil {
+		httpx.Fail(w, err)
+		return
+	}
+
+	limit := optionalInt(r, "limit", 20)
+	offset := optionalInt(r, "offset", 0)
+
+	list, err := s.comments.List(r.Context(), userID, taskID, limit, offset)
+	if err != nil {
+		httpx.Fail(w, err)
+		return
+	}
+
+	httpx.JSON(w, http.StatusOK, map[string]any{
+		commentsKey: list,
+		limitKey:    limit,
+		offsetKey:   offset,
+	})
+}
+
+func (s *Server) handleUpdateComment(w http.ResponseWriter, r *http.Request) {
+	userID, _ := middleware.UserID(r.Context())
+	commentID, err := pathID(r, "id")
+	if err != nil {
+		httpx.Fail(w, err)
+		return
+	}
+
+	var req commentRequest
+	if err = httpx.Decode(r, &req); err != nil {
+		httpx.Fail(w, err)
+		return
+	}
+
+	comment, err := s.comments.Update(r.Context(), userID, commentID, req.Body)
+	if err != nil {
+		httpx.Fail(w, err)
+		return
+	}
+
+	httpx.JSON(w, http.StatusOK, comment)
+}
+
+func (s *Server) handleDeleteComment(w http.ResponseWriter, r *http.Request) {
+	userID, _ := middleware.UserID(r.Context())
+	commentID, err := pathID(r, "id")
+	if err != nil {
+		httpx.Fail(w, err)
+		return
+	}
+
+	if err = s.comments.Delete(r.Context(), userID, commentID); err != nil {
+		httpx.Fail(w, err)
+		return
+	}
+
+	httpx.JSON(w, http.StatusNoContent, nil)
 }
 
 // --- Analytics ---

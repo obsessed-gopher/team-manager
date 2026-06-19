@@ -43,6 +43,10 @@ make run               # TM_CONFIG_PATH=config/local.yml go run ./cmd/teammanage
 | GET  | `/tasks?team_id=&status=&assignee_id=&limit=&offset=` | список с фильтрами и пагинацией |
 | PUT  | `/tasks/{id}` | обновить задачу (с проверкой прав) |
 | GET  | `/tasks/{id}/history` | история изменений задачи |
+| POST | `/tasks/{id}/comments` | добавить комментарий (член команды) |
+| GET  | `/tasks/{id}/comments?limit=&offset=` | комментарии задачи с пагинацией |
+| PUT  | `/comments/{id}` | редактировать комментарий (только автор) |
+| DELETE | `/comments/{id}` | удалить комментарий (автор или owner/admin) |
 | GET  | `/analytics/team-stats` | участники + задачи `done` за 7 дней по командам |
 | GET  | `/analytics/top-creators` | топ-3 создателя задач в каждой команде за месяц |
 | GET  | `/analytics/integrity-issues` | задачи, где исполнитель не в команде |

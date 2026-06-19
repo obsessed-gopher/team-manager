@@ -68,6 +68,9 @@ make run               # TM_CONFIG_PATH=config/local.yml go run ./cmd/teammanage
 Пример:
 
 ```bash
+curl localhost:8080/api/v1/register \
+  -d '{"email": "a@b.io","name": "Alice","password": "password123"}'
+
 TOKEN=$(curl -s localhost:8080/api/v1/login \
   -d '{"email":"a@b.io","password":"password123"}' | jq -r .token)
 

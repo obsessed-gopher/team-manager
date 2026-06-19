@@ -61,7 +61,7 @@ func httpStatus(t *testing.T, err error) int {
 
 func TestRegister_Success(t *testing.T) {
 	repo := newMockUserRepo()
-	svc := NewService(repo, &mockTokens{})
+	svc := NewService(repo, &mockTokens{}, nil)
 
 	user, err := svc.Register(context.Background(), "  Alice@Example.com ", " Alice ", "password123")
 	require.NoError(t, err)
@@ -77,7 +77,7 @@ func TestRegister_Success(t *testing.T) {
 
 func TestRegister_DuplicateEmail(t *testing.T) {
 	repo := newMockUserRepo()
-	svc := NewService(repo, &mockTokens{})
+	svc := NewService(repo, &mockTokens{}, nil)
 
 	_, err := svc.Register(context.Background(), "bob@example.com", "Bob", "password123")
 	require.NoError(t, err)
@@ -97,7 +97,7 @@ func TestRegister_Validation(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			svc := NewService(newMockUserRepo(), &mockTokens{})
+			svc := NewService(newMockUserRepo(), &mockTokens{}, nil)
 			_, err := svc.Register(context.Background(), c.email, c.uname, c.pass)
 			require.Error(t, err)
 			assert.Equal(t, 400, httpStatus(t, err))
@@ -110,7 +110,7 @@ func TestRegister_Validation(t *testing.T) {
 func TestLogin_Success(t *testing.T) {
 	repo := newMockUserRepo()
 	tokens := &mockTokens{}
-	svc := NewService(repo, tokens)
+	svc := NewService(repo, tokens, nil)
 
 	_, err := svc.Register(context.Background(), "carol@example.com", "Carol", "password123")
 	require.NoError(t, err)
@@ -124,7 +124,7 @@ func TestLogin_Success(t *testing.T) {
 
 func TestLogin_WrongPassword(t *testing.T) {
 	repo := newMockUserRepo()
-	svc := NewService(repo, &mockTokens{})
+	svc := NewService(repo, &mockTokens{}, nil)
 	_, err := svc.Register(context.Background(), "dave@example.com", "Dave", "password123")
 	require.NoError(t, err)
 
@@ -134,7 +134,7 @@ func TestLogin_WrongPassword(t *testing.T) {
 }
 
 func TestLogin_UnknownUser(t *testing.T) {
-	svc := NewService(newMockUserRepo(), &mockTokens{})
+	svc := NewService(newMockUserRepo(), &mockTokens{}, nil)
 	_, _, err := svc.Login(context.Background(), "ghost@example.com", "password123")
 	require.Error(t, err)
 	assert.Equal(t, 401, httpStatus(t, err))

@@ -4,6 +4,7 @@ package auth
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"net/mail"
 	"strings"
 
@@ -29,11 +30,16 @@ type TokenIssuer interface {
 type Service struct {
 	repo   UserRepository
 	tokens TokenIssuer
+	logger *slog.Logger
 }
 
-// NewService создаёт сервис аутентификации.
-func NewService(repo UserRepository, tokens TokenIssuer) *Service {
-	return &Service{repo: repo, tokens: tokens}
+// NewService создаёт сервис аутентификации. Если logger == nil, используется slog.Default.
+func NewService(repo UserRepository, tokens TokenIssuer, logger *slog.Logger) *Service {
+	if logger == nil {
+		logger = slog.Default()
+	}
+
+	return &Service{repo: repo, tokens: tokens, logger: logger}
 }
 
 // Register регистрирует пользователя и возвращает его модель.
@@ -78,6 +84,8 @@ func (s *Service) Login(ctx context.Context, email, password string) (string, *m
 	u, err := s.repo.GetUserByEmail(ctx, email)
 	if err != nil {
 		if errors.Is(err, mysql.ErrNotFound) {
+			// Клиенту — обобщённый ответ, в лог — конкретная причина для отладки.
+			s.logger.WarnContext(ctx, "login failed: user not found", "email", email)
 			return "", nil, httpx.Unauthorized("invalid email or password")
 		}
 
@@ -85,6 +93,7 @@ func (s *Service) Login(ctx context.Context, email, password string) (string, *m
 	}
 
 	if err = bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(password)); err != nil {
+		s.logger.WarnContext(ctx, "login failed: password mismatch", "user_id", u.ID, "email", email)
 		return "", nil, httpx.Unauthorized("invalid email or password")
 	}
 

@@ -62,7 +62,7 @@ func main() {
 	jwtManager := jwt.NewManager(cfg.JWT.Secret, cfg.JWT.TTL)
 
 	// Бизнес-модули.
-	authSvc := auth.NewService(store, jwtManager)
+	authSvc := auth.NewService(store, jwtManager, log)
 	teamsSvc := teams.NewService(store, store, emailSvc)
 	tasksSvc := tasks.NewService(store, redisStore, log)
 	commentsSvc := comments.NewService(store)

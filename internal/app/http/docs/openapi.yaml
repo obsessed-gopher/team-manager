@@ -496,6 +496,9 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: >-
+        Вставьте только сам JWT-токен из ответа `POST /api/v1/login` —
+        `Bearer` писать не нужно, Swagger UI добавит его сам.
 
   parameters:
     PathID:

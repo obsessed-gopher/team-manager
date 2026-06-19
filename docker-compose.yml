@@ -1,0 +1,78 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: tm_mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: team_manager
+      MYSQL_USER: tm
+      MYSQL_PASSWORD: tm
+    volumes:
+      - tm_mysql_data:/var/lib/mysql
+    networks:
+      - tm-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: tm_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - tm-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  migrate:
+    image: migrate/migrate:v4.17.1
+    container_name: tm_migrate
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ./migrations/mysql:/migrations
+    networks:
+      - tm-net
+    command:
+      [
+        "-path", "/migrations",
+        "-database", "mysql://tm:tm@tcp(mysql:3306)/team_manager",
+        "up",
+      ]
+    restart: on-failure
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tm_app
+    ports:
+      - "8080:8080"
+    environment:
+      TM_CONFIG_PATH: /app/config/docker.yml
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - tm-net
+    restart: unless-stopped
+
+networks:
+  tm-net:
+    driver: bridge
+
+volumes:
+  tm_mysql_data:

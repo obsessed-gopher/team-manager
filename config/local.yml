@@ -1,0 +1,46 @@
+env: "local"
+log_level: "DEBUG"
+
+http:
+  address: "0.0.0.0:8080"
+  read_timeout: 15s
+  write_timeout: 15s
+  idle_timeout: 60s
+
+mysql:
+  host: "localhost"
+  port: 3306
+  user: "tm"
+  password: "tm"
+  db: "team_manager"
+  max_open_conns: 50
+  max_idle_conns: 10
+  conn_max_lifetime: 1h
+  conn_max_idle_time: 30m
+  connect_timeout: 5s
+
+redis:
+  address: "localhost:6379"
+  password: ""
+  db: 0
+  pool_size: 10
+  tasks_ttl: 5m
+
+jwt:
+  secret: "super-secret-change-me"
+  ttl: 24h
+
+email:
+  fail_rate: 0.0
+  latency: 10ms
+  cb_max_requests: 3
+  cb_interval: 60s
+  cb_timeout: 30s
+  cb_failures: 5
+
+rate_limit:
+  requests_per_minute: 100
+  burst: 20
+
+time_outs:
+  graceful_shutdown: 30s

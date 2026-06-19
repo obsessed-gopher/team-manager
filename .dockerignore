@@ -1,0 +1,7 @@
+.git
+.idea
+bin
+data
+coverage.out
+*.md
+.DS_Store
